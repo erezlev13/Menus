@@ -1,25 +1,43 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ex04.Menus.Interface
+namespace Ex04.Menus.Interfaces
 {
-    internal class MenuItem
+    public interface IMethodActivator
     {
-        readonly string r_HeadLine;
-        List<MenuItem> m_SubMenu;
-        MenuItem m_PreviousItem;
-        bool m_IsLeaf;
+        void CallMethod();
+    }
+
+    public interface IMenuItemClickedListener
+    {
+        void MenuItemClicked(MenuItem i_MenuItemThatWasClicked);
+    }
+
+    public interface IBackOptionListener
+    {
+        void BackClicked(MenuItem i_BackWasClicked);
+    }
+
+    public class MenuItem
+    {
+        private readonly string r_HeadLine;
+        private List<MenuItem> m_SubMenu;
+        private MenuItem m_PreviousItem;
+        private IMethodActivator m_MethodAction;
+        private IBackOptionListener m_BackeWasClicked;
+        private IMenuItemClickedListener m_OptionWasClicked;
+        private bool m_IsLeaf;
 
         // Constructor
-        public MenuItem(string i_HeadLine, MenuItem i_previousItem, bool i_IsLeaf)
+        public MenuItem(string i_HeadLine)
         {
             m_SubMenu = new List<MenuItem>();
             r_HeadLine = i_HeadLine;
-            m_PreviousItem = i_previousItem;
-            m_IsLeaf = i_IsLeaf;
+            m_PreviousItem = null;
+            m_IsLeaf = true;
         }
 
         // Propetries
@@ -47,18 +65,106 @@ namespace Ex04.Menus.Interface
             }
         }
 
+        public IMethodActivator MethodActivator
+        {
+            get
+            {
+                return m_MethodAction;
+            }
+
+            set
+            {
+                m_MethodAction = value;
+            }
+        }
+
+        public IBackOptionListener BackOptionListener
+        {
+            set
+            {
+                m_BackeWasClicked = value;
+            }
+        }
+
+        public IMenuItemClickedListener OptionListener
+        {
+            set
+            {
+                m_OptionWasClicked = value;
+            }
+        }
+
         public bool IsLeaf
         {
             get
             {
                 return m_IsLeaf;
             }
+
+            set
+            {
+                m_IsLeaf = value;
+            }
         }
 
-        public void AddToSubMenu(MenuItem i_MenuItemToAdd)
+        public void AddToSubMenu(params MenuItem[] i_MenuItemsToAdd)
         {
-            m_SubMenu.Add(i_MenuItemToAdd);
+            int indexOfMenuItem = 0;
+            IsLeaf = false;
+
+            foreach (MenuItem menuItem in i_MenuItemsToAdd)
+            {
+                m_SubMenu.Add(menuItem);
+                m_SubMenu[indexOfMenuItem].m_PreviousItem = this;
+                indexOfMenuItem++;
+            }
         }
 
+        public void InitializeMenuItemListener(IMenuItemClickedListener i_MenuItemListener)
+        {
+            foreach (MenuItem menuItem in SubMenu)
+            {
+                menuItem.OptionListener = i_MenuItemListener;
+            }
+        }
+
+        public void InitializeBackListener(IBackOptionListener i_BackListener)
+        {
+            foreach (MenuItem menuItem in SubMenu)
+            {
+                menuItem.BackOptionListener = i_BackListener;
+            }
+        }
+
+        public void ShowSubMenuItem()
+        {
+            int i = 1;
+
+            Console.WriteLine(HeadLine);
+            foreach (MenuItem menuItem in m_SubMenu)
+            {
+                Console.WriteLine(string.Format("{0}.{1}", i, menuItem.HeadLine));
+                i++;
+            }
+
+            Console.WriteLine("0.Back");
+        }
+
+        public void ActiveMethod()
+        {
+            m_MethodAction.CallMethod();
+        }
+
+        public void ChooseOptionToClick(int i_SubMenuChosice)
+        {
+            if (i_SubMenuChosice == 0)
+            {
+                m_BackeWasClicked.BackClicked(this);
+            }
+            else
+            {
+                m_OptionWasClicked.MenuItemClicked(this);
+            }
+        }
     }
 }
