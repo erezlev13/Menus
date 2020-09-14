@@ -65,8 +65,8 @@ namespace Ex04.Menus.Interfaces
             if (i_MenuItemThatWasClicked.IsLeaf)
             {
                 i_MenuItemThatWasClicked.ActiveMethod();
+                Thread.Sleep(500);
                 CurrentMenuItem = CurrentMenuItem.PreviousItem;
-                Thread.Sleep(1500);
             }
             else
             {
@@ -81,7 +81,6 @@ namespace Ex04.Menus.Interfaces
             if (previousMenuItem != null)
             {
                 Console.Clear();
-                Thread.Sleep(1500);
             }
 
             CurrentMenuItem = previousMenuItem;
@@ -129,7 +128,6 @@ namespace Ex04.Menus.Interfaces
                     getToSubMenu();
                 }
 
-                Thread.Sleep(1500);
                 Console.Clear();
                 printMainMenu();
                 menuOption = getMenuOption();
@@ -138,7 +136,6 @@ namespace Ex04.Menus.Interfaces
 
         private void getToSubMenu()
         {
-            Thread.Sleep(1500);
             Console.Clear();
             CurrentMenuItem.ShowSubMenuItem();
             int subMenuOption = getMenuOption();
@@ -156,14 +153,27 @@ namespace Ex04.Menus.Interfaces
         private int getMenuOption()
         {
             int menuOptionIndex;
+            string userAnswer;
 
             Console.Write("Please choose option from the menu (or Back/Exit): ");
-            while (!int.TryParse(Console.ReadLine(), out menuOptionIndex))
+            userAnswer = Console.ReadLine();
+            while (!isValidNumericInput(userAnswer, out menuOptionIndex) || !isValidMenuIndex(menuOptionIndex))
             {
                 Console.WriteLine("Please enter only valid index, and numbers only.");
+                userAnswer = Console.ReadLine();
             }
 
             return menuOptionIndex;
+        }
+
+        private bool isValidNumericInput(string i_UserAnswer, out int o_MenuIndex)
+        {
+            return int.TryParse(i_UserAnswer, out o_MenuIndex);
+        }
+
+        private bool isValidMenuIndex(int i_MenuOptionIndex)
+        {
+            return i_MenuOptionIndex <= MenuItems.Count;
         }
     }
 }
