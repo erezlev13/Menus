@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Ex04.Menus.Delegates
@@ -13,10 +13,14 @@ namespace Ex04.Menus.Delegates
         private readonly string r_HeadLine;
         private List<MenuItem> m_SubMenu;
         private MenuItem m_PreviousItem;
-        public event Action MethodWasActivated;
-        public event Action BackWasClicked;
-        public event Action<MenuItem> OptionWasClicked;
         private bool m_IsLeaf;
+        private bool m_IsSubscribed = false;
+
+        public event Action MethodWasActivated;
+
+        public event Action BackWasClicked;
+
+        public event Action<MenuItem> OptionWasClicked;
 
         // Constructor
         public MenuItem(string i_HeadLine)
@@ -62,6 +66,19 @@ namespace Ex04.Menus.Delegates
             set
             {
                 m_IsLeaf = value;
+            }
+        }
+
+        public bool IsSubscribed
+        {
+            get
+            {
+                return m_IsSubscribed;
+            }
+
+            set
+            {
+                m_IsSubscribed = value;
             }
         }
 
