@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -66,6 +66,7 @@ namespace Ex04.Menus.Delegates
                 MenuItems.Add(menuItem);
                 menuItem.OptionWasClicked += menuItem_OptionWasClicked;
                 menuItem.BackWasClicked += menuItem_BackWasClicked;
+                menuItem.IsSubscribed = true;
             }
         }
 
@@ -76,7 +77,6 @@ namespace Ex04.Menus.Delegates
             if (previousMenuItem != null)
             {
                 Console.Clear();
-                Thread.Sleep(1500);
             }
 
             CurrentMenuItem = previousMenuItem;
@@ -88,8 +88,8 @@ namespace Ex04.Menus.Delegates
             if (i_MenuItemThatWasClicked.IsLeaf)
             {
                 i_MenuItemThatWasClicked.OnActiveMethod();
+                Thread.Sleep(500);
                 CurrentMenuItem = CurrentMenuItem.PreviousItem;
-                Thread.Sleep(1500);
             }
             else
             {
@@ -129,7 +129,6 @@ namespace Ex04.Menus.Delegates
                     getToSubMenu();
                 }
 
-                Thread.Sleep(1500);
                 Console.Clear();
                 printMainMenu();
                 menuOption = getMenuOption();
@@ -138,7 +137,6 @@ namespace Ex04.Menus.Delegates
 
         private void getToSubMenu()
         {
-            Thread.Sleep(1500);
             Console.Clear();
             CurrentMenuItem.ShowSubMenuItem();
             int subMenuOption = getMenuOption();
@@ -146,24 +144,48 @@ namespace Ex04.Menus.Delegates
             if (subMenuOption != 0)
             {
                 CurrentMenuItem = CurrentMenuItem.SubMenu[subMenuOption - 1];
-                CurrentMenuItem.OptionWasClicked += menuItem_OptionWasClicked;
-                CurrentMenuItem.BackWasClicked += menuItem_BackWasClicked;
+            }
+
+            if (!CurrentMenuItem.IsSubscribed)
+            {
+                subscribeBackListener();
             }
 
             CurrentMenuItem.ChooseOptionToClick(subMenuOption);
         }
 
+        private void subscribeBackListener()
+        {
+            CurrentMenuItem.BackWasClicked += menuItem_BackWasClicked;
+            CurrentMenuItem.OptionWasClicked += menuItem_OptionWasClicked;
+
+            CurrentMenuItem.IsSubscribed = true;
+        }
+
         private int getMenuOption()
         {
             int menuOptionIndex;
+            string userAnswer;
 
             Console.Write("Please choose option from the menu (or Back/Exit): ");
-            while (!int.TryParse(Console.ReadLine(), out menuOptionIndex))
+            userAnswer = Console.ReadLine();
+            while (!isValidNumericInput(userAnswer, out menuOptionIndex) || !isValidMenuIndex(menuOptionIndex))
             {
                 Console.WriteLine("Please enter only valid index, and numbers only.");
+                userAnswer = Console.ReadLine();
             }
 
             return menuOptionIndex;
+        }
+
+        private bool isValidNumericInput(string i_UserAnswer, out int o_MenuIndex)
+        {
+            return int.TryParse(i_UserAnswer, out o_MenuIndex);
+        }
+
+        private bool isValidMenuIndex(int i_MenuOptionIndex)
+        {
+            return i_MenuOptionIndex <= MenuItems.Count;
         }
     }
 }
