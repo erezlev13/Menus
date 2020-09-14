@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ex04.Menus.Interfaces
 {
@@ -18,11 +15,15 @@ namespace Ex04.Menus.Interfaces
 
     public interface IBackOptionListener
     {
-        void BackClicked(MenuItem i_BackWasClicked);
+        void BackClicked();
     }
 
     public class MenuItem
     {
+        // Constants:
+        private const string k_Back = "Back";
+        private const int k_BackIndex = 0;
+        // Data Members:
         private readonly string r_HeadLine;
         private List<MenuItem> m_SubMenu;
         private MenuItem m_PreviousItem;
@@ -143,11 +144,11 @@ namespace Ex04.Menus.Interfaces
             Console.WriteLine(HeadLine);
             foreach (MenuItem menuItem in m_SubMenu)
             {
-                Console.WriteLine(string.Format("{0}.{1}", i, menuItem.HeadLine));
+                Console.WriteLine(string.Format("{0}. {1}", i, menuItem.HeadLine));
                 i++;
             }
 
-            Console.WriteLine("0.Back");
+            Console.WriteLine("{0}. {1}", k_BackIndex, k_Back);
         }
 
         public void ActiveMethod()
@@ -159,7 +160,7 @@ namespace Ex04.Menus.Interfaces
         {
             if (i_SubMenuChosice == 0)
             {
-                m_BackeWasClicked.BackClicked(this);
+                m_BackeWasClicked.BackClicked();
             }
             else
             {
