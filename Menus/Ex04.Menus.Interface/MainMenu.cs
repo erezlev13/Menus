@@ -74,7 +74,7 @@ namespace Ex04.Menus.Interfaces
             }
         }
 
-        void IBackOptionListener.BackClicked(MenuItem i_BackWasClicked)
+        void IBackOptionListener.BackClicked()
         {
             MenuItem previousMenuItem = CurrentMenuItem.PreviousItem;
 
