@@ -1,16 +1,17 @@
 using System;
-using Ex04.Menus;
+using System.Threading;
 
 namespace Ex04.Menus.Test
 {
-    class Program
+    public class Program
     {
-        static void Main()
+        public static void Main()
         {
             Interfaces.MainMenu mainMenuInterfaces = CreateMenuWithInterfaces();
             mainMenuInterfaces.Show();
 
             Console.WriteLine("Switch to menu builder with delegates");
+            Thread.Sleep(800);
             Console.Clear();
 
             Delegates.MainMenu mainMenuDelegates = CreateMenuWithDelegates();
